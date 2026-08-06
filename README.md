@@ -69,7 +69,7 @@ VisionCanvas/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/VisionCanvas.git
+git clone https://github.com/yiralcraft/VisionCanvas.git
 ```
 
 ```bash
@@ -152,14 +152,6 @@ or
 ```
 images/home.png
 ```
-
----
-
-## 📦 Requirements
-
-- Python 3.10+
-- Webcam
-- Internet browser
 
 ---
 
