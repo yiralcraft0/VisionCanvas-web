@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Home
+{% endblock title %}
+{% block content %}
+<style>
+    canvas {
+        display: none;
+    }
+    .container{
+        display: flex;
+        img{
+            margin: 20px 10px;
+        }
+    }
+</style>
+    <div class="container">
+        <!-- The magic happens here: url_for links directly to the Flask route -->
+        <img src="{{ url_for('video_feed') }}" width="500" height="400" alt="Live Stream">
+        <img src="{{ url_for('drawCanves') }}" width="500" height="400" alt="Draw Canva">
+    </div>
+{% endblock content %}
