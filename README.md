@@ -1,6 +1,6 @@
 # 🎨 Vision Canvas
 
-## 👨‍💻 Author: **Priyanshu**[YiralcrafT]
+### 👨‍💻 Author: **Priyanshu**[YiralcrafT]
 - GitHub: https://github.com/yiralcraft0
 
 ---
