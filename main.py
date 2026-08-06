@@ -1,73 +1,179 @@
-from flask import Flask, render_template, redirect, Response
+import time
+import threading
+
 import cv2 as cv
-from HandTrakingModule import HandDetection
 import numpy as np
+from flask import Flask, Response, render_template
+
+from HandTrakingModule import HandDetection
+
 
 app = Flask(__name__)
+
+# ---------------------------------------------------------
+# Camera and hand detector
+# ---------------------------------------------------------
+
 camera = cv.VideoCapture(1)
-hDetect = HandDetection(maxHands=1,
-                        modelComplexity=0,
-                        detectConfidence=0.7,
-                        trackConfidence=0.7)
+
+# Change 1 to 0 if your main webcam uses index 0
+if not camera.isOpened():
+    raise RuntimeError(
+        "Could not open camera. Try changing cv.VideoCapture(1) "
+        "to cv.VideoCapture(0)."
+    )
+
+hDetect = HandDetection(
+    maxHands=1,
+    modelComplexity=0,
+    detectConfidence=0.7,
+    trackConfidence=0.7,
+)
 
 
-def generate_frame():
-    x_indexTip, y_indexTip = 0, 0
-    while True:
-        # Read the camera frame
+# ---------------------------------------------------------
+# Shared data
+# ---------------------------------------------------------
+
+latest_video_frame = None
+latest_canvas_frame = None
+canvas = None
+
+# Protect shared frames from being read and written simultaneously
+frame_lock = threading.Lock()
+
+# Used to stop the processing loop safely
+processing_active = True
+
+
+def process_camera():
+    """
+    Continuously reads and processes camera frames.
+
+    Only this function accesses the camera and MediaPipe detector.
+    """
+
+    global latest_video_frame
+    global latest_canvas_frame
+    global canvas
+    global processing_active
+
+    previous_x = 0
+    previous_y = 0
+
+    while processing_active:
         success, frame = camera.read()
-        frameFlip = cv.flip(frame, 1)
+
         if not success:
-            break
+            print("Failed to read camera frame.")
+            time.sleep(0.05)
+            continue
+
+        # Mirror the frame
+        frame = cv.flip(frame, 1)
+
+        height, width, _ = frame.shape
+
+        # Create the drawing canvas
+        if canvas is None or canvas.shape != frame.shape:
+            canvas = np.zeros_like(frame)
+
+        # Detect the hand
+        hDetect.findHands(frame)
+        landmark_list = hDetect.findHandPos(frame)
+
+        hand_detected = False
+        current_x = 0
+        current_y = 0
+
+        if landmark_list and len(landmark_list) > 8:
+            # Landmark 8 is the index fingertip
+            current_x = landmark_list[8][1]
+            current_y = landmark_list[8][2]
+            hand_detected = True
+
+            cv.circle(
+                frame,
+                (current_x, current_y),
+                10,
+                (255, 0, 0),
+                -1,
+            )
+
+        # Draw using index fingertip
+        if hand_detected:
+            if previous_x == 0 and previous_y == 0:
+                previous_x = current_x
+                previous_y = current_y
+
+            cv.line(
+                canvas,
+                (previous_x, previous_y),
+                (current_x, current_y),
+                (255, 0, 0),
+                5,
+            )
+
+            previous_x = current_x
+            previous_y = current_y
+
         else:
+            # Prevent a long line after tracking is lost
+            previous_x = 0
+            previous_y = 0
 
-            cv.rectangle(frameFlip, (0, 0), (640, 480), (255, 255, 255), 5)
-            hDetect.findHands(frameFlip)
-
-            lmList = hDetect.findHandPos(frameFlip)
-
-            if lmList != None:
-                indexTip = lmList[8]
-                x_indexTip, y_indexTip = indexTip[1], indexTip[2]
-
-                cv.circle(frameFlip, (x_indexTip, y_indexTip),
-                          10, (255, 0, 0), -1)
-
-        return [frameFlip, (x_indexTip, y_indexTip)]
-
-
-def generate_framesImg():
-
-    while True:
-        frameFlip = generate_frame()
-        # Encode the frame in JPEG format
-        ret, buffer = cv.imencode(".jpg", frameFlip[0])
-        frame_bytes = buffer.tobytes()
-        # Yield the output frame in the byte format required for MJPEG streaming
-        yield (
-            b"--frame\r\n"
-            b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n"
+        # Add video border
+        cv.rectangle(
+            frame,
+            (0, 0),
+            (width - 1, height - 1),
+            (255, 255, 255),
+            5,
         )
 
+        # Save copies of the latest frames
+        with frame_lock:
+            latest_video_frame = frame.copy()
+            latest_canvas_frame = canvas.copy()
 
-def draw_Canvas():
-    canvas = np.zeros((640, 480, 3), dtype="uint8")
-    xPrev, yPrev = 0, 0
+        # Small delay to avoid unnecessary CPU usage
+        # time.sleep(0.001)
+
+
+def generate_stream(stream_type):
+    """
+    Streams either the processed webcam frame or the canvas frame.
+    """
+
     while True:
-        frameFlip = generate_frame()
-        xInit, yInit = frameFlip[1]
+        with frame_lock:
+            if stream_type == "video":
+                frame = (
+                    latest_video_frame.copy()
+                    if latest_video_frame is not None
+                    else None
+                )
+            else:
+                frame = (
+                    latest_canvas_frame.copy()
+                    if latest_canvas_frame is not None
+                    else None
+                )
 
-        if xPrev is 0 or yPrev is 0:
-            xPrev, yPrev = xInit, yInit
-        else:
-            cv.line(canvas, (xPrev, yPrev), (xInit, yInit), (255, 0, 0), 5)
-            xPrev, yPrev = xInit, yInit
+        if frame is None:
+            time.sleep(0.01)
+            continue
 
-        ret, buffer = cv.imencode(".jpg", canvas)
-        frame_bytes = buffer.tobytes()
+        success, buffer = cv.imencode(".jpg", frame)
+
+        if not success:
+            continue
+
         yield (
             b"--frame\r\n"
-            b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n"
+            b"Content-Type: image/jpeg\r\n\r\n"
+            + buffer.tobytes()
+            + b"\r\n"
         )
 
 
@@ -76,18 +182,61 @@ def home():
     return render_template("home.html")
 
 
-@app.route("/drawCanves")
-def drawCanves():
-    return Response(draw_Canvas(), mimetype="multipart/x-mixed-replace; boundary=frame")
-
-
 @app.route("/video_feed")
 def video_feed():
-    # Return the response generated along with the specific media type (mime type)
     return Response(
-        generate_framesImg(), mimetype="multipart/x-mixed-replace; boundary=frame"
+        generate_stream("video"),
+        mimetype="multipart/x-mixed-replace; boundary=frame",
     )
 
 
+@app.route("/drawCanvas")
+def draw_canvas_route():
+    return Response(
+        generate_stream("canvas"),
+        mimetype="multipart/x-mixed-replace; boundary=frame",
+    )
+
+
+@app.route("/clear_canvas")
+def clear_canvas():
+    """Clear the complete drawing canvas."""
+
+    global canvas
+    global latest_canvas_frame
+
+    with frame_lock:
+        if canvas is not None:
+            canvas[:] = 0
+            latest_canvas_frame = canvas.copy()
+
+    return {"status": "Canvas cleared successfully"}
+
+
+def release_resources():
+    """Release the webcam when the application stops."""
+
+    global processing_active
+
+    processing_active = False
+
+    if camera.isOpened():
+        camera.release()
+
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5600)
+    camera_thread = threading.Thread(
+        target=process_camera,
+        daemon=True,
+    )
+    camera_thread.start()
+
+    try:
+        app.run(
+            debug=True,
+            port=5600,
+            threaded=True,
+            use_reloader=False,
+        )
+    finally:
+        release_resources()
