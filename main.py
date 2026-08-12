@@ -14,7 +14,7 @@ app = Flask(__name__)
 # Camera and hand detector
 # ---------------------------------------------------------
 
-camera = cv.VideoCapture(1)
+camera = cv.VideoCapture(0)
 
 # Change 1 to 0 if your main webcam uses index 0
 if not camera.isOpened():
@@ -45,6 +45,8 @@ frame_lock = threading.Lock()
 # Used to stop the processing loop safely
 processing_active = True
 
+def mouseEvent():
+    ...
 
 def process_camera():
     """
@@ -60,6 +62,8 @@ def process_camera():
 
     previous_x = 0
     previous_y = 0
+
+    pTime, cTime = 0, 0
 
     while processing_active:
         success, frame = camera.read()
@@ -81,6 +85,7 @@ def process_camera():
         # Detect the hand
         hDetect.findHands(frame)
         landmark_list = hDetect.findHandPos(frame)
+        isFingersUp = hDetect.fingersUp()
 
         hand_detected = False
         current_x = 0
@@ -92,37 +97,30 @@ def process_camera():
             current_y = landmark_list[8][2]
             hand_detected = True
 
-            cv.circle(
-                frame,
-                (current_x, current_y),
-                10,
-                (255, 0, 0),
-                -1,
-            )
+            cv.circle(frame,(current_x, current_y),10,(255, 0, 0),-1)
 
-        # Draw using index fingertip
-        if hand_detected:
-            if previous_x == 0 and previous_y == 0:
-                previous_x = current_x
-                previous_y = current_y
+            # Draw using index fingertip
+            if hand_detected:
+                if isFingersUp[1] == 1 and isFingersUp[2] == 1:
+                    if previous_x == 0 and previous_y == 0:
+                        previous_x = current_x
+                        previous_y = current_y
 
-            cv.line(
-                canvas,
-                (previous_x, previous_y),
-                (current_x, current_y),
-                (255, 0, 0),
-                5,
-            )
+                    cv.line(
+                        canvas,
+                        (previous_x, previous_y),
+                        (current_x, current_y),
+                        (255, 0, 0),
+                        5,
+                    )
 
-            previous_x = current_x
-            previous_y = current_y
+                    previous_x = current_x
+                    previous_y = current_y
 
-        else:
-            # Prevent a long line after tracking is lost
-            previous_x = 0
-            previous_y = 0
+                else:
+                    previous_x = 0
+                    previous_y = 0
 
-        # Add video border
         cv.rectangle(
             frame,
             (0, 0),
@@ -131,13 +129,15 @@ def process_camera():
             5,
         )
 
-        # Save copies of the latest frames
+        cTime = time.time()
+        fps = int(1 / (cTime - pTime)) if (cTime - pTime) > 0 else 0
+        pTime = cTime
+
+        cv.putText(frame, f"FPS: {fps}", (20, 50), cv.FONT_HERSHEY_PLAIN, 2, (60, 112, 206), 2)
+
         with frame_lock:
             latest_video_frame = frame.copy()
             latest_canvas_frame = canvas.copy()
-
-        # Small delay to avoid unnecessary CPU usage
-        # time.sleep(0.001)
 
 
 def generate_stream(stream_type):

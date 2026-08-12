@@ -33,6 +33,9 @@ class HandDetection:
         self.tipIds = [4, 8, 12, 16, 20]
 
     def findHands(self, frame, isDraw=True):
+        """
+        Draw Hand Structure on the visual hand
+        """
         frameRGB = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
         # Optimizing memory layout for faster MediaPipe processing
@@ -51,6 +54,9 @@ class HandDetection:
         return frame
 
     def findHandPos(self, frame, handNo=0, isDraw=True):
+        """
+        Returns a list of 3 elements: [id, x, y]
+        """
         self.lmList = []
 
         if self.results and self.results.multi_hand_landmarks:
@@ -109,6 +115,7 @@ class HandDetection:
 
 def main():
     pTime = 0
+    cTime = 0
 
     capture = cv.VideoCapture(0)
 
