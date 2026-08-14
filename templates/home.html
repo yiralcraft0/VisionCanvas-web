@@ -4,20 +4,50 @@
 Home
 {% endblock title %}
 {% block content %}
+
 <style>
     canvas {
         display: none;
     }
-    .container{
+
+    .container {
         display: flex;
-        img{
+
+        img {
             margin: 20px 10px;
         }
     }
+
+    .color-cointaner {
+        display: flex;
+    }
+
+    .box-color {
+        height: 20px;
+        width: 20px;
+        /* background-color: brown; */
+        margin: 10px;
+        box-shadow: none;
+        outline: none;
+    }
 </style>
-    <div class="container">
-        <!-- The magic happens here: url_for links directly to the Flask route -->
-        <img src="{{ url_for('video_feed') }}" width="500" height="400" alt="Live Stream">
-        <img src="{{ url_for('draw_canvas_route') }}" width="500" height="400" alt="Draw Canva">
+
+<div class="container">
+    <!-- The magic happens here: url_for links directly to the Flask route -->
+    <img src="{{ url_for('video_feed') }}" width="500" height="400" alt="Live Stream">
+    <img src="{{ url_for('draw_canvas_route') }}" width="500" height="400" alt="Draw Canva">
+</div>
+<div>
+    <div class="color-cointaner">
+        <button class="box-color" style="background-color: rgb(255, 255, 255);"></button>
+        <button class="box-color" style="background-color: rgb(255, 0, 0);"></button>
+        <button class="box-color" style="background-color: green;"></button>
+        <button class="box-color" style="background-color: blue;"></button>
+        <button class="box-color" style="background-color: yellow;"></button>
+        <button class="box-color" style="background-color: violet;"></button>
+        <button class="box-color" style="background-color: orange;"></button>
+        <button class="box-color" style="background-color: hotpink;"></button>
+        <input type="color" class="box-color">
     </div>
+</div>
 {% endblock content %}

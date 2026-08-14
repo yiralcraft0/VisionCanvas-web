@@ -45,8 +45,9 @@ frame_lock = threading.Lock()
 # Used to stop the processing loop safely
 processing_active = True
 
-def mouseEvent():
-    ...
+brushColour = (255,255,255)
+brushSize = 10
+
 
 def process_camera():
     """
@@ -97,10 +98,13 @@ def process_camera():
             current_y = landmark_list[8][2]
             hand_detected = True
 
-            cv.circle(frame,(current_x, current_y),10,(255, 0, 0),-1)
+            cv.circle(frame,(current_x, current_y),brushSize,brushColour,-1)
 
             # Draw using index fingertip
             if hand_detected:
+                if len(set(isFingersUp)) <= 1:
+                    canvas[:] = 0,0,0
+
                 if isFingersUp[1] == 1 and isFingersUp[2] == 1:
                     if previous_x == 0 and previous_y == 0:
                         previous_x = current_x
@@ -110,8 +114,8 @@ def process_camera():
                         canvas,
                         (previous_x, previous_y),
                         (current_x, current_y),
-                        (255, 0, 0),
-                        5,
+                        brushColour,
+                        brushSize,
                     )
 
                     previous_x = current_x
@@ -128,6 +132,7 @@ def process_camera():
             (255, 255, 255),
             5,
         )
+
 
         cTime = time.time()
         fps = int(1 / (cTime - pTime)) if (cTime - pTime) > 0 else 0
