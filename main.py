@@ -1,9 +1,9 @@
 import time
 import threading
-
+import math
 import cv2 as cv
 import numpy as np
-from flask import Flask, Response, render_template
+from flask import Flask, Response, render_template, request
 
 from HandTrakingModule import HandDetection
 
@@ -63,9 +63,10 @@ def process_camera():
 
     previous_x = 0
     previous_y = 0
-
+    current_x = 0
+    current_y = 0
     pTime, cTime = 0, 0
-
+    lineLength = 0
     while processing_active:
         success, frame = camera.read()
 
@@ -89,23 +90,30 @@ def process_camera():
         isFingersUp = hDetect.fingersUp()
 
         hand_detected = False
-        current_x = 0
-        current_y = 0
 
         if landmark_list and len(landmark_list) > 8:
             # Landmark 8 is the index fingertip
-            current_x = landmark_list[8][1]
-            current_y = landmark_list[8][2]
-            hand_detected = True
+            xIndex, yIndex = landmark_list[8][1], landmark_list[8][2]
+            xMiddel, yMiddel = landmark_list[12][1] ,landmark_list[12][2]
 
-            cv.circle(frame,(current_x, current_y),brushSize,brushColour,-1)
+            cv.circle(frame,(xIndex, yIndex),10,(0,0,0),-1)
+            cv.circle(frame,(xMiddel, yMiddel),10,(0,0,0),-1)
+
+            cv.line(frame, (xIndex, yIndex), (xMiddel, yMiddel), brushColour, 3)
+            
+            current_x, current_y = (xIndex + xMiddel) // 2, (yIndex + yMiddel) // 2
+            cv.circle(frame, (current_x,current_y), brushSize, brushColour, -1)
+
+            lineLength = int(math.hypot(xMiddel - xIndex, yMiddel - yIndex ))
+
+            hand_detected = True
 
             # Draw using index fingertip
             if hand_detected:
                 if len(set(isFingersUp)) <= 1:
                     canvas[:] = 0,0,0
 
-                if isFingersUp[1] == 1 and isFingersUp[2] == 1:
+                if isFingersUp[1] == 1 and isFingersUp[2] == 1 and lineLength <= 30:
                     if previous_x == 0 and previous_y == 0:
                         previous_x = current_x
                         previous_y = current_y
@@ -139,6 +147,7 @@ def process_camera():
         pTime = cTime
 
         cv.putText(frame, f"FPS: {fps}", (20, 50), cv.FONT_HERSHEY_PLAIN, 2, (60, 112, 206), 2)
+        cv.putText(frame, f"Length: {str(lineLength)}", (20, 100), cv.FONT_HERSHEY_PLAIN, 2, (60, 112, 206), 2)
 
         with frame_lock:
             latest_video_frame = frame.copy()
@@ -181,6 +190,26 @@ def generate_stream(stream_type):
             + b"\r\n"
         )
 
+@app.route("/setColor", methods=["POST"])
+def set_color():
+    global brushColour
+    data = request.get_json()
+
+    if type(data["color"]) == list:
+        r, g, b = data["color"]
+        brushColour = (b, g, r)
+
+        return {"status": "success"}
+    
+    else:
+        hex_color = data["color"]
+        hex_color = hex_color.lstrip("#")
+        r = int(hex_color[0:2], 16)
+        g = int(hex_color[2:4], 16)
+        b = int(hex_color[4:6], 16)
+        brushColour = (b, g, r)
+        
+        return {"status": "success"}
 
 @app.route("/")
 def home():
