@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,12 +11,20 @@
     {% endblock Cstyle %}
     <link rel="stylesheet" href="/static/app_css/base.css">
 </head>
+
 <body>
     <nav>
-        <div class="navTitle">
-            <h1>Vision Canvas</h1>
-            <hr>
-        </div> 
+        <div class="appLogo">
+            <img src="/static/images/VisionCanvasLogo2.png" alt="LOGO">
+        </div>
+        <div class="appTitle">
+            <div class="T1">
+                Vision-Canvas
+            </div>
+            <div class="T2">
+                Hand Traking & Drawing
+            </div>
+        </div>
     </nav>
 
     {% block content %}
@@ -24,4 +33,5 @@
     {% block Jscript %}
     {% endblock Jscript %}
 </body>
+
 </html>
