@@ -26,8 +26,8 @@ if not camera.isOpened():
 hDetect = HandDetection(
     maxHands=1,
     modelComplexity=0,
-    detectConfidence=0.7,
-    trackConfidence=0.7,
+    detectConfidence=0.6,
+    trackConfidence=0.5
 )
 
 
@@ -48,6 +48,9 @@ processing_active = True
 brushColour = (255,255,255)
 brushSize = 10
 
+wCam, hCam = 640, 480
+camera.set(cv.CAP_PROP_FRAME_WIDTH, wCam)
+camera.set(cv.CAP_PROP_FRAME_HEIGHT, hCam)
 
 def process_camera():
     """
@@ -67,6 +70,7 @@ def process_camera():
     current_y = 0
     pTime, cTime = 0, 0
     lineLength = 0
+    frameR = 100
     while processing_active:
         success, frame = camera.read()
 
@@ -91,6 +95,8 @@ def process_camera():
 
         hand_detected = False
 
+        cv.rectangle(frame, (frameR, frameR), (width - frameR, height - frameR), (0,0,255), 4)
+
         if landmark_list and len(landmark_list) > 8:
             # Landmark 8 is the index fingertip
             xIndex, yIndex = landmark_list[8][1], landmark_list[8][2]
@@ -101,19 +107,24 @@ def process_camera():
 
             cv.line(frame, (xIndex, yIndex), (xMiddel, yMiddel), brushColour, 3)
             
-            current_x, current_y = (xIndex + xMiddel) // 2, (yIndex + yMiddel) // 2
-            cv.circle(frame, (current_x,current_y), brushSize, brushColour, -1)
+            currentX, currentY = (xIndex + xMiddel) // 2, (yIndex + yMiddel) // 2
+            cv.circle(frame, (currentX,currentY), brushSize, brushColour, -1)
 
             lineLength = int(math.hypot(xMiddel - xIndex, yMiddel - yIndex ))
 
             hand_detected = True
+            current_x = np.interp(currentX, [frameR, wCam - frameR], [0, wCam])
+            current_y = np.interp(currentY, [frameR, hCam - frameR], [0, hCam])
+
+            current_x = int(np.clip(current_x, 0, wCam - 1))
+            current_y = int(np.clip(current_y, 0, hCam - 1))
 
             # Draw using index fingertip
             if hand_detected:
                 if len(set(isFingersUp)) <= 1:
                     canvas[:] = 0,0,0
 
-                if isFingersUp[1] == 1 and isFingersUp[2] == 1 and lineLength <= 30:
+                if isFingersUp[1] == 1 and isFingersUp[2] == 1 and lineLength <= 35:
                     if previous_x == 0 and previous_y == 0:
                         previous_x = current_x
                         previous_y = current_y
@@ -147,7 +158,7 @@ def process_camera():
         pTime = cTime
 
         cv.putText(frame, f"FPS: {fps}", (20, 50), cv.FONT_HERSHEY_PLAIN, 2, (60, 112, 206), 2)
-        cv.putText(frame, f"Length: {str(lineLength)}", (20, 100), cv.FONT_HERSHEY_PLAIN, 2, (60, 112, 206), 2)
+        cv.putText(frame, f"Length: {str(lineLength)}", (20, 80), cv.FONT_HERSHEY_PLAIN, 2, (60, 112, 206), 2)
 
         with frame_lock:
             latest_video_frame = frame.copy()
