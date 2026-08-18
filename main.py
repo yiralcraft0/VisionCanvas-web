@@ -14,7 +14,7 @@ app = Flask(__name__)
 # Camera and hand detector
 # ---------------------------------------------------------
 
-camera = cv.VideoCapture(1)
+camera = cv.VideoCapture(0)
 
 # Change 1 to 0 if your main webcam uses index 0
 if not camera.isOpened():
@@ -46,124 +46,124 @@ frame_lock = threading.Lock()
 processing_active = True
 
 brushColour = (255,255,255)
-brushSize = 10
+brushSize = 5
 
-wCam, hCam = 640, 480
+wCam, hCam = 300,300
 camera.set(cv.CAP_PROP_FRAME_WIDTH, wCam)
 camera.set(cv.CAP_PROP_FRAME_HEIGHT, hCam)
 
 def process_camera():
-    ...
-    # """
-    # Continuously reads and processes camera frames.
 
-    # Only this function accesses the camera and MediaPipe detector.
-    # """
+    """
+    Continuously reads and processes camera frames.
 
-    # global latest_video_frame
-    # global latest_canvas_frame
-    # global canvas
-    # global processing_active
+    Only this function accesses the camera and MediaPipe detector.
+    """
 
-    # previous_x = 0
-    # previous_y = 0
-    # current_x = 0
-    # current_y = 0
-    # pTime, cTime = 0, 0
-    # lineLength = 0
-    # frameR = 100
-    # while processing_active:
-    #     success, frame = camera.read()
+    global latest_video_frame
+    global latest_canvas_frame
+    global canvas
+    global processing_active
 
-    #     if not success:
-    #         print("Failed to read camera frame.")
-    #         time.sleep(0.05)
-    #         continue
+    previous_x = 0
+    previous_y = 0
+    current_x = 0
+    current_y = 0
+    pTime, cTime = 0, 0
+    lineLength = 0
+    frameR = 30
+    while processing_active:
+        success, frame = camera.read()
 
-    #     # Mirror the frame
-    #     frame = cv.flip(frame, 1)
+        if not success:
+            print("Failed to read camera frame.")
+            time.sleep(0.05)
+            continue
 
-    #     height, width, _ = frame.shape
+        # Mirror the frame
+        frame = cv.flip(frame, 1)
 
-    #     # Create the drawing canvas
-    #     if canvas is None or canvas.shape != frame.shape:
-    #         canvas = np.zeros_like(frame)
+        height, width, _ = frame.shape
 
-    #     # Detect the hand
-    #     hDetect.findHands(frame)
-    #     landmark_list = hDetect.findHandPos(frame)
-    #     isFingersUp = hDetect.fingersUp()
+        # Create the drawing canvas
+        if canvas is None or canvas.shape != frame.shape:
+            canvas = np.zeros_like(frame)
 
-    #     hand_detected = False
+        # Detect the hand
+        hDetect.findHands(frame)
+        landmark_list = hDetect.findHandPos(frame)
+        isFingersUp = hDetect.fingersUp()
 
-    #     cv.rectangle(frame, (frameR, frameR), (width - frameR, height - frameR), (0,0,255), 4)
+        hand_detected = False
 
-    #     if landmark_list and len(landmark_list) > 8:
-    #         # Landmark 8 is the index fingertip
-    #         xIndex, yIndex = landmark_list[8][1], landmark_list[8][2]
-    #         xMiddel, yMiddel = landmark_list[12][1] ,landmark_list[12][2]
+        # cv.rectangle(frame, (frameR, frameR), (width - frameR, height - frameR), (0,0,255), 4)
 
-    #         cv.circle(frame,(xIndex, yIndex),10,(0,0,0),-1)
-    #         cv.circle(frame,(xMiddel, yMiddel),10,(0,0,0),-1)
+        if landmark_list and len(landmark_list) > 8:
+            # Landmark 8 is the index fingertip
+            xIndex, yIndex = landmark_list[8][1], landmark_list[8][2]
+            xMiddel, yMiddel = landmark_list[12][1] ,landmark_list[12][2]
 
-    #         cv.line(frame, (xIndex, yIndex), (xMiddel, yMiddel), brushColour, 3)
+            cv.circle(frame,(xIndex, yIndex),10,(0,0,0),-1)
+            cv.circle(frame,(xMiddel, yMiddel),10,(0,0,0),-1)
+
+            cv.line(frame, (xIndex, yIndex), (xMiddel, yMiddel), brushColour, 3)
             
-    #         currentX, currentY = (xIndex + xMiddel) // 2, (yIndex + yMiddel) // 2
-    #         cv.circle(frame, (currentX,currentY), brushSize, brushColour, -1)
+            currentX, currentY = (xIndex + xMiddel) // 2, (yIndex + yMiddel) // 2
+            cv.circle(frame, (currentX,currentY), brushSize, brushColour, -1)
 
-    #         lineLength = int(math.hypot(xMiddel - xIndex, yMiddel - yIndex ))
+            lineLength = int(math.hypot(xMiddel - xIndex, yMiddel - yIndex ))
 
-    #         hand_detected = True
-    #         current_x = np.interp(currentX, [frameR, wCam - frameR], [0, wCam])
-    #         current_y = np.interp(currentY, [frameR, hCam - frameR], [0, hCam])
+            hand_detected = True
+            current_x = np.interp(currentX, [frameR, wCam - frameR], [0, wCam])
+            current_y = np.interp(currentY, [frameR, hCam - frameR], [0, hCam])
 
-    #         current_x = int(np.clip(current_x, 0, wCam - 1))
-    #         current_y = int(np.clip(current_y, 0, hCam - 1))
+            current_x = int(np.clip(current_x, 0, wCam - 1))
+            current_y = int(np.clip(current_y, 0, hCam - 1))
 
-    #         # Draw using index fingertip
-    #         if hand_detected:
-    #             if len(set(isFingersUp)) <= 1:
-    #                 canvas[:] = 0,0,0
+            # Draw using index fingertip
+            if hand_detected:
+                if len(set(isFingersUp)) <= 1:
+                    canvas[:] = 0,0,0
 
-    #             if isFingersUp[1] == 1 and isFingersUp[2] == 1 and lineLength <= 35:
-    #                 if previous_x == 0 and previous_y == 0:
-    #                     previous_x = current_x
-    #                     previous_y = current_y
+                if isFingersUp[1] == 1 and isFingersUp[2] == 1 and lineLength <= 35:
+                    if previous_x == 0 and previous_y == 0:
+                        previous_x = current_x
+                        previous_y = current_y
 
-    #                 cv.line(
-    #                     canvas,
-    #                     (previous_x, previous_y),
-    #                     (current_x, current_y),
-    #                     brushColour,
-    #                     brushSize,
-    #                 )
+                    cv.line(
+                        canvas,
+                        (previous_x, previous_y),
+                        (current_x, current_y),
+                        brushColour,
+                        brushSize,
+                    )
 
-    #                 previous_x = current_x
-    #                 previous_y = current_y
+                    previous_x = current_x
+                    previous_y = current_y
 
-    #             else:
-    #                 previous_x = 0
-    #                 previous_y = 0
+                else:
+                    previous_x = 0
+                    previous_y = 0
 
-    #     cv.rectangle(
-    #         frame,
-    #         (0, 0),
-    #         (width - 1, height - 1),
-    #         (255, 255, 255),
-    #         5,
-    #     )
+        # cv.rectangle(
+        #     frame,
+        #     (0, 0),
+        #     (width - 1, height - 1),
+        #     (255, 255, 255),
+        #     5,
+        # )
 
 
-    #     cTime = time.time()
-    #     fps = int(1 / (cTime - pTime)) if (cTime - pTime) > 0 else 0
-    #     pTime = cTime
+        cTime = time.time()
+        fps = int(1 / (cTime - pTime)) if (cTime - pTime) > 0 else 0
+        pTime = cTime
 
-    #     cv.putText(frame, f"FPS: {fps}", (20, 50), cv.FONT_HERSHEY_PLAIN, 2, (60, 112, 206), 2)
-    #     cv.putText(frame, f"Length: {str(lineLength)}", (20, 80), cv.FONT_HERSHEY_PLAIN, 2, (60, 112, 206), 2)
+        cv.putText(frame, f"FPS: {fps}", (30, 50), cv.FONT_HERSHEY_PLAIN, .8, (60, 112, 206), 2)
+        # cv.putText(frame, f"Length: {str(lineLength)}", (20, 80), cv.FONT_HERSHEY_PLAIN, 1, (60, 112, 206), 2)
 
-    #     with frame_lock:
-    #         latest_video_frame = frame.copy()
-    #         latest_canvas_frame = canvas.copy()
+        with frame_lock:
+            latest_video_frame = frame.copy()
+            latest_canvas_frame = canvas.copy()
 
 
 def generate_stream(stream_type):

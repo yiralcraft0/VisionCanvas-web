@@ -12,43 +12,46 @@ html {
 }
 
 body {
-    background-color: rgb(13, 21, 34);
+    background-color: rgb(0, 8, 9);
 }
 
 nav {
     display: flex;
     margin: 15px;
+    margin-bottom: 30px;
     padding: 10px;
-    border: 5px solid rgb(32 65 118);
+    border: 5px solid rgb(116, 225, 88);
     border-radius: 50px;
     /* filter: blur(1px); */
     position: static;
-    background-color: rgba(32, 65, 118, 0.3);
-    box-shadow: 0px 10px 30px rgb(32 65 118);
+    background-color: rgb(116, 225, 88, 0.2);
+    box-shadow: 0px 5px 10px rgb(116, 225, 88);
+
 
     .appLogo {
         img {
-            height: 55px;
-            width: 55px;
+            height: 50px;
+            width: 50px;
         }
 
-        border: 2px solid rgb(165, 83, 210);
+        border: 2px solid rgb(150, 55, 213);
         padding: 5px;
         border-radius: 100%;
-        margin: 0px 10px;
+        margin-right: 10px;
     }
 
     .appTitle {
         .T1 {
-            font-size: 30px;
-            color: rgb(69, 169, 251);
+            font-size: 25px;
+            color: rgb(195, 233, 164);
             font-family: "Sekuya", system-ui;
             font-weight: 400;
-            font-style: normal
+            font-style: normal;
+            margin-top: 5px;
         }
 
         .T2 {
-            font-size: 18px;
+            font-size: 16px;
             color: rgb(255, 255, 255);
             position: relative;
             font-family: "Ubuntu", sans-serif;
@@ -64,7 +67,7 @@ nav {
             position: absolute;
             bottom: -8px;
             left: -6px;
-            background-image: linear-gradient(to right,rgb(80 55 164), rgb(104, 175, 238) );
+            background-image: linear-gradient(to right,rgb(118, 227, 89), rgb(118, 227, 89) );
         }
     }
 
