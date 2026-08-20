@@ -1,51 +1,52 @@
-{% extends 'base.html' %}
-
-{% block title %}
-Home
-{% endblock title %}
-
-{% block Cstyle %}
-<link rel="stylesheet" href="/static/app_css/home.css">
-{% endblock Cstyle %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %} Home {% endblock title %} {% block
+Cstyle %}
+<link rel="stylesheet" href="/static/app_css/home.css" />
+{% endblock Cstyle %} {% block content %}
 
 <div class="mainContainer">
+
     <div class="cam">
         <div class="camHead">
-            <img src="/static/media/cameraIcon.svg" alt="CAMERA">
-            <span>CAMERA FEED</span>
+            <img src="/static/media/cameraIcon.svg" alt="CAMERA" />
+            <span>Camera Feed</span>
         </div>
         <div class="camBody">
-            <img src="{{ url_for('video_feed') }}" width="300" height="300" alt="Live Stream">
+            <img src="{{ url_for('video_feed') }}" width="300" height="300" alt="Live Stream" />
         </div>
     </div>
+
     <div class="canvas">
         <div class="canvasHead">
-            <img src="/static/media/penIcon.svg" alt="CANVAS">
+            <img src="/static/media/penIcon.svg" alt="CANVAS" />
             <span>Drawing Canvas</span>
         </div>
         <div class="canvasBody">
-            <img src="{{ url_for('draw_canvas_route') }}" width="700" height="280" alt="Draw Canva">
+            <img src="{{ url_for('draw_canvas_route') }}" width="700" height="280" alt="Draw Canva" />
         </div>
         <div class="canvasFoot">
             <div class="color-cointaner">
-                <button value="white" id="colwhite" class="box-color" style="background-color: #ffffff;"></button>
-                <button value="red" id="colred" class="box-color" style="background-color: #ff0000;"></button>
-                <button value="green" id="colgreen" class="box-color" style="background-color: #008000;"></button>
-                <button value="blue" id="colblue" class="box-color" style="background-color: #0000ff;"></button>
-                <button value="yellow" id="colyellow" class="box-color" style="background-color: #ffff00;"></button>
-                <button value="violet" id="colviolet" class="box-color" style="background-color: rgb(238, 130, 238);"></button>
-                <button value="orange" id="colorange" class="box-color" style="background-color: #ffa500;"></button>
-                <button value="hotpink" id="colhotpink" class="box-color" style="background-color: #ff69b4;"></button>
-                <input value="#000000" id="colMulti" type="color" class="box-color">
+                <button value="white" id="colwhite" class="box-color" style="background-color: #ffffff"></button>
+                <button value="red" id="colred" class="box-color" style="background-color: #ff0000"></button>
+                <button value="green" id="colgreen" class="box-color" style="background-color: #008000"></button>
+                <button value="blue" id="colblue" class="box-color" style="background-color: #0000ff"></button>
+                <button value="yellow" id="colyellow" class="box-color" style="background-color: #ffff00"></button>
+                <button value="violet" id="colviolet" class="box-color"
+                    style="background-color: rgb(238, 130, 238)"></button>
+                <button value="orange" id="colorange" class="box-color" style="background-color: #ffa500"></button>
+                <button value="hotpink" id="colhotpink" class="box-color" style="background-color: #ff69b4"></button>
+                <input value="#000000" id="colMulti" type="color" class="box-color" />
             </div>
             <div class="penSize">
-                <select name="Size" id="penSize"></select>
+                <span>Brush Size</span>
+                <button id="sizeMinus">&lt;</button>
+                <input type="text" value="3" id="brushSizeBox" />
+                <button id="sizePlus">&gt;</button>
             </div>
         </div>
     </div>
+    
 </div>
+
 <div class="colFun">
     <div class="help">
         <ul>
@@ -56,8 +57,6 @@ Home
         </ul>
     </div>
 </div>
-{% endblock content %}
-
-{% block Jscript %}
+{% endblock content %} {% block Jscript %}
 <script src="/static/app_js/home.js"></script>
 {% endblock Jscript %}

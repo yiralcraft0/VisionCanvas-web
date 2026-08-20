@@ -42,13 +42,13 @@ canvas {
         padding: 10px;
         margin: 10px;
         display: flex;
-        justify-content: center;
+        /* justify-content: center; */
         align-items: center;
         flex-direction: column;
-        background-color: rgba(41, 66, 34, 0.418);
-        border: 2px solid rgb(116, 225, 88);
+        background-color: rgba(21, 33, 26, 0.65);
+        border: 2px solid rgb(116, 225, 88,);
         border-radius: 20px;
-        box-shadow: 2px 2px 5px rgb(48, 102, 33);
+        box-shadow: 0px 0px 5px rgb(141, 230, 85, 0.8);
         margin-right: 40px;
 
         .camHead {
@@ -61,6 +61,11 @@ canvas {
             img {
                 height: 30px;
                 margin-right: 10px;
+                padding: 5px;
+                border: 2px solid rgb(114, 182, 79,);
+                border-radius: 100%;
+                box-shadow: 0px 0px 4px rgb(141, 230, 85);
+                filter: drop-shadow(0px 0px 5px rgb(141, 230, 85));
 
             }
 
@@ -81,8 +86,8 @@ canvas {
 
             margin: 10px;
             padding: 5px;
-            border: 2px solid rgb(116, 225, 88);
-            box-shadow: 0px 0px 8px rgb(116, 225, 88);
+            border: 2px solid rgb(116, 225, 88,);
+            box-shadow: 0px 0px 4px rgb(116, 225, 88);
             border-radius: 20px;
             overflow: hidden;
 
@@ -98,25 +103,32 @@ canvas {
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        background-color: rgba(41, 66, 34, 0.418);
-        border: 2px solid rgb(116, 225, 88);
+        background-color: rgba(21, 33, 26, 0.65);
+        border: 2px solid rgb(116, 225, 88,);
         border-radius: 20px;
-        box-shadow: 2px 2px 5px rgb(48, 102, 33);
+        box-shadow: 0px 0px 5px rgb(141, 230, 85, 0.8);
         margin-right: 40px;
-
+    
         .canvasHead {
             display: flex;
             align-items: center;
             justify-items: center;
             /* margin: 5px; */
             padding: 5px;
-
+    
             img {
                 height: 30px;
                 margin-right: 10px;
-
+                padding: 5px;
+                border: 2px solid rgb(114, 182, 79,);
+                border-radius: 100%;
+                box-shadow: 0px 0px 4px rgb(141, 230, 85);
+                filter: drop-shadow(0px 0px 5px rgb(141, 230, 85));
+    
+    
+    
             }
-
+    
             span {
                 font-family: "Archivo Black", sans-serif;
                 font-weight: 400;
@@ -124,29 +136,31 @@ canvas {
                 font-size: 16px;
                 color: white;
             }
-
+    
         }
-
+    
         .canvasBody {
             img {
-                border: 2px solid rgb(116, 225, 88);
-                box-shadow: 0px 0px 8px rgb(116, 225, 88);
+                border: 2px solid rgb(116, 225, 88,);
+                box-shadow: 0px 0px 4px rgb(116, 225, 88);
                 border-radius: 20px;
-
+    
             }
-
+    
             margin: 10px;
             padding: 5px;
         }
-
+    
         .canvasFoot {
             display: flex;
             flex-direction: row;
             justify-content: center;
             align-items: center;
-
+    
             .color-cointaner {
                 display: flex;
+                margin-right: 100px;
+    
                 .box-color {
                     height: 25px;
                     width: 25px;
@@ -155,18 +169,63 @@ canvas {
                     box-shadow: none;
                     outline: none;
                     border-radius: 50%;
-                    border: none;    
-
+                    border: none;
+    
                 }
-                .box-color:active{
-                    border: 1px solid black;    
+    
+                .box-color:active {
+                    border: 1px solid black;
                     transform: scale(1.1);
                 }
             }
-
-
-
+    
+            .penSize {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+    
+                span {
+                    color: white;
+                    font-family: "Archivo Black", sans-serif;
+                    margin-right: 10px;
+    
+                }
+    
+                input {
+                    text-align: center;
+                    color: white;
+                    width: 20px;
+                    height: 20px;
+                    font-size: 16px;
+                    font-family: "Archivo Black", sans-serif;
+                    /* margin: 5px; */
+                    padding: 6px;
+                    background-color: rgba(41, 66, 34, 0.2);
+                    border: 1px solid rgb(116, 225, 88);
+                    border-radius: 50%;
+    
+                }
+    
+                button {
+                    background-color: rgba(41, 66, 34, 0.2);
+                    height: fit-content;
+                    color: white;
+                    font-family: "Archivo Black", sans-serif;
+                    border: 1px solid rgb(116, 225, 88);
+                    border-radius: 8px;
+                    padding: 5px;
+                    margin: 5px;
+                }
+    
+                button:active {
+                    background-color: rgb(116, 225, 88, 0.2);
+                    transform: scale(1.2);
+                }
+            }
+    
+    
+    
         }
-
+    
     }
 }

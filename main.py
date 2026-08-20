@@ -223,6 +223,14 @@ def set_color():
         
         return {"status": "success"}
 
+@app.route("/setBrushSize", methods = ["POST"])
+def setBrushSize():
+    global brushSize
+    data = request.get_json()
+    brushSize = int(data["size"])
+    return {"Status" : "Success"}
+
+
 @app.route("/")
 def home():
     return render_template("home.html")

@@ -45,3 +45,69 @@ getColor.forEach(colors => {
     }
     console.log("featch done");
 });
+
+const sizeMinus = document.getElementById("sizeMinus")
+const sizePlus = document.getElementById("sizePlus")
+const brushSizeBox = document.getElementById("brushSizeBox")
+
+
+sizeMinus.addEventListener("click", () => {
+    if (brushSizeBox.value > 1) {
+        var brushSize = brushSizeBox.value;
+        brushSizeBox.value--;
+        brushSize = brushSizeBox.value
+
+        fetch(`${window.origin}/setBrushSize`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                size: brushSize
+            })
+
+        });
+    };
+
+});
+
+sizePlus.addEventListener("click", () => {
+
+    if (brushSizeBox.value < 20) {
+        var brushSize = brushSizeBox.value;
+        brushSizeBox.value++;
+        brushSize = brushSizeBox.value
+
+        fetch(`${window.origin}/setBrushSize`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                size: String(brushSize)
+            })
+
+        });
+    };
+});
+
+brushSizeBox.addEventListener("change", () => {
+    if (brushSizeBox.value > 20) {
+        brushSizeBox.value = 20;
+    } else if (brushSizeBox.value < 1) {
+        brushSizeBox.value = 1;
+    };
+
+    var brushSize = brushSizeBox.value
+    fetch(`${window.origin}/setBrushSize`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            size: String(brushSize)
+        })
+
+    });
+});
+
