@@ -111,4 +111,61 @@ brushSizeBox.addEventListener("change", () => {
     });
 });
 
+document.getElementById("clearCanvasBtn").addEventListener("click", () =>{
+    fetch(`${window.origin}/clearCanvas`,{
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            status : "Done"
+        })
+    });
+});
+
+async function downloadDrawing() {
+    try {
+        const response = await fetch(`${window.origin}/downloadCanvas`);
+
+        if (!response.ok) {
+            const error = await response.text();
+            console.error("Server error:", error);
+            alert("Could not download the drawing.");
+            return;
+        }
+
+        const blob = await response.blob();
+
+        console.log("File type:", blob.type);
+        console.log("File size:", blob.size);
+
+        if (!blob.type.includes("image/png")) {
+            console.error("Unexpected file:", blob.type);
+            alert("Server did not return a PNG image.");
+            return;
+        }
+
+        const handle = await window.showSaveFilePicker({
+            suggestedName: "my_drawing.png",
+            types: [
+                {
+                    description: "PNG Image",
+                    accept: {
+                        "image/png": [".png"]
+                    }
+                }
+            ]
+        });
+
+        const writable = await handle.createWritable();
+
+        await writable.write(blob);
+        await writable.close();
+
+        console.log("Drawing saved successfully!");
+
+    } catch (error) {
+        console.error("Download error:", error);
+    }
+}
 
