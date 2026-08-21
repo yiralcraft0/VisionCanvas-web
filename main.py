@@ -4,17 +4,17 @@ import math
 import cv2 as cv
 import numpy as np
 from flask import Flask, Response, render_template, request
-
+from flask_socketio import SocketIO
 from HandTrakingModule import HandDetection
 
 
 app = Flask(__name__)
-
+socketio = SocketIO(app, cors_allowed_origins="*")
 # ---------------------------------------------------------
 # Camera and hand detector
 # ---------------------------------------------------------
 
-camera = cv.VideoCapture(0)
+camera = cv.VideoCapture(1)
 
 # Change 1 to 0 if your main webcam uses index 0
 if not camera.isOpened():
@@ -47,13 +47,14 @@ processing_active = True
 
 brushColour = (255,255,255)
 brushSize = 5
+fps = 0
 
 wCam, hCam = 300,300
 camera.set(cv.CAP_PROP_FRAME_WIDTH, wCam)
 camera.set(cv.CAP_PROP_FRAME_HEIGHT, hCam)
 
 def process_camera():
-
+    global fps
     """
     Continuously reads and processes camera frames.
 
@@ -157,7 +158,8 @@ def process_camera():
         cTime = time.time()
         fps = int(1 / (cTime - pTime)) if (cTime - pTime) > 0 else 0
         pTime = cTime
-
+        socketio.emit('fps_update', {'value': fps})
+        time.sleep(0.1)
         cv.putText(frame, f"FPS: {fps}", (30, 50), cv.FONT_HERSHEY_PLAIN, .8, (60, 112, 206), 2)
         # cv.putText(frame, f"Length: {str(lineLength)}", (20, 80), cv.FONT_HERSHEY_PLAIN, 1, (60, 112, 206), 2)
 

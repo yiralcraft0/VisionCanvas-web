@@ -26,10 +26,10 @@ nav {
     padding: 10px;
     border-radius: 50px;
     position: static;
-    background-color: rgb(21, 33, 26, 0.8);
-    border: 3px solid rgb(116, 225, 88, .5);
-    box-shadow: 0 0 8px rgb(116, 225, 88) ;
+    /* border: 3px solid rgb(116, 225, 88, .5); */
+    box-shadow: 0 2px 8px rgb(116, 225, 88);
 
+    background-color: rgb(21, 33, 26, 0.8);
 
     .appLogo {
         img {

@@ -157,9 +157,9 @@ images/home.png
 
 ## 💡 Future Improvements
 
-- Multiple brush colors
-- Adjustable brush size
-- Eraser mode
+- Multiple brush colors ✅
+- Adjustable brush size ✅
+- Eraser mode ✅
 - Save drawing as image
 - Gesture-based controls
 - Undo & Redo

@@ -2,61 +2,126 @@
 Cstyle %}
 <link rel="stylesheet" href="/static/app_css/home.css" />
 {% endblock Cstyle %} {% block content %}
+<section>
+    <div class="mainContainer">
 
-<div class="mainContainer">
-
-    <div class="cam">
-        <div class="camHead">
-            <img src="/static/media/cameraIcon.svg" alt="CAMERA" />
-            <span>Camera Feed</span>
-        </div>
-        <div class="camBody">
-            <img src="{{ url_for('video_feed') }}" width="300" height="300" alt="Live Stream" />
-        </div>
-    </div>
-
-    <div class="canvas">
-        <div class="canvasHead">
-            <img src="/static/media/penIcon.svg" alt="CANVAS" />
-            <span>Drawing Canvas</span>
-        </div>
-        <div class="canvasBody">
-            <img src="{{ url_for('draw_canvas_route') }}" width="700" height="280" alt="Draw Canva" />
-        </div>
-        <div class="canvasFoot">
-            <div class="color-cointaner">
-                <button value="white" id="colwhite" class="box-color" style="background-color: #ffffff"></button>
-                <button value="red" id="colred" class="box-color" style="background-color: #ff0000"></button>
-                <button value="green" id="colgreen" class="box-color" style="background-color: #008000"></button>
-                <button value="blue" id="colblue" class="box-color" style="background-color: #0000ff"></button>
-                <button value="yellow" id="colyellow" class="box-color" style="background-color: #ffff00"></button>
-                <button value="violet" id="colviolet" class="box-color"
-                    style="background-color: rgb(238, 130, 238)"></button>
-                <button value="orange" id="colorange" class="box-color" style="background-color: #ffa500"></button>
-                <button value="hotpink" id="colhotpink" class="box-color" style="background-color: #ff69b4"></button>
-                <input value="#000000" id="colMulti" type="color" class="box-color" />
+        <div class="cam">
+            <div class="camHead">
+                <img src="/static/media/cameraIcon.svg" alt="CAMERA" />
+                <span>Camera Feed</span>
             </div>
-            <div class="penSize">
-                <span>Brush Size</span>
-                <button id="sizeMinus">&lt;</button>
-                <input type="text" value="3" id="brushSizeBox" />
-                <button id="sizePlus">&gt;</button>
+            <div class="camBody">
+                <img src="{{ url_for('video_feed') }}" width="300" height="300" alt="Live Stream" />
             </div>
         </div>
-    </div>
-    
-</div>
 
-<div class="colFun">
-    <div class="help">
-        <ul>
-            <p>USE GUIDE:-</p>
-            <li>To use pen index and middel fingers up.</li>
-            <li>To stop writing index up and middel finger down.</li>
-            <li>To clear canves all fingers down</li>
-        </ul>
+        <div class="canvas">
+            <div class="canvasHead">
+                <img src="/static/media/drawingIcon.svg" alt="CANVAS" />
+                <span>Drawing Canvas</span>
+            </div>
+            <div class="canvasBody">
+                <img src="{{ url_for('draw_canvas_route') }}" width="700" height="280" alt="Draw Canva" />
+            </div>
+            <div class="canvasFoot">
+                <div class="color-cointaner">
+                    <button value="white" id="colwhite" class="box-color" style="background-color: #ffffff"></button>
+                    <button value="red" id="colred" class="box-color" style="background-color: #ff0000"></button>
+                    <button value="green" id="colgreen" class="box-color" style="background-color: #008000"></button>
+                    <button value="blue" id="colblue" class="box-color" style="background-color: #0000ff"></button>
+                    <button value="yellow" id="colyellow" class="box-color" style="background-color: #ffff00"></button>
+                    <button value="violet" id="colviolet" class="box-color"
+                        style="background-color: rgb(238, 130, 238)"></button>
+                    <button value="orange" id="colorange" class="box-color" style="background-color: #ffa500"></button>
+                    <button value="hotpink" id="colhotpink" class="box-color"
+                        style="background-color: #ff69b4"></button>
+                    <input value="#000000" id="colMulti" type="color" class="box-color" />
+                </div>
+                <div class="penSize">
+                    <span>Brush Size</span>
+                    <button id="sizeMinus">&lt;</button>
+                    <input type="text" value="3" id="brushSizeBox" />
+                    <button id="sizePlus">&gt;</button>
+                </div>
+            </div>
+        </div>
+
     </div>
-</div>
+</section>
+
+<section class="controlPanel">
+    <div class="userGuide">
+        <div class="guideHead">
+            <img src="/static/media/guideIcon.svg" alt="Use Guide">
+            <span>Use Guide</span>
+        </div>
+        <div class="guideBody">
+            <ul>
+                <li>Raise your hand in fronrt of camera</li>
+                <li>To use pen, rais your index and middel fingers up.</li>
+                <li>Move your hand to draw on the canvas</li>
+                <li>To stop writing, index finguer up and middel finger down.</li>
+                <li>To clear canves, all fingers down or up</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="canvesControl">
+        <div class="controlHead">
+            <img src="/static/media/contralIcon.svg" alt="control">
+            <span>Controls</span>
+        </div>
+        <div class="controlBody">
+            <button>
+                <img src="/static/media/deleteIcon.svg" alt="Clear">
+                <span>Clear Canvas</span>
+            </button>
+            <button>
+                <img src="/static/media/downloadIcon.svg" alt="Save">
+                <span>Save Drawing</span>
+            </button>
+        </div>
+
+    </div>
+
+    <div class="statusBar">
+        <div class="statusHead">
+            <img src="/static/media/statusIcon.svg" alt="Status">
+            <span>Status</span>
+        </div>
+        <div class="statusBody">
+            <div class="statusContent">
+                <div class="statusTitle">
+                    <img src="/static/media/trakingIcon.svg" alt="Traking">
+                    <span>Traking</span>
+                </div>
+                <div class="statusCheak">
+                    <span>Active</span>
+                </div>
+            </div>
+
+            <div class="statusContent">
+                <div class="statusTitle">
+                    <img src="/static/media/drawingIcon.svg" alt="Drawing">
+                    <span>Drawing</span>
+                </div>
+                <div class="statusCheak">
+                    <span>Yes</span>
+                </div>
+            </div>
+
+            <div class="statusContent">
+                <div class="statusTitle">
+                    <img src="/static/media/fpsIcon.svg" alt="FPS">
+                    <span>FPS</span>
+                </div>
+                <div class="statusCheak">
+                    <span>--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock content %} {% block Jscript %}
 <script src="/static/app_js/home.js"></script>
 {% endblock Jscript %}
