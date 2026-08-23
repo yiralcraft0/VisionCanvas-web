@@ -147,13 +147,8 @@ http://127.0.0.1:5600
 
 ## 📸 Preview
 
-Add screenshots or a demo GIF here.
+| <img src="static/images/Screenshot1.png" width="300">
 
-Example:
-
-```
-![Project Screenshot](/static/images/Screenshot1.png)
-```
 
 
 ---

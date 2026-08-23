@@ -85,6 +85,7 @@ def process_camera():
         isFingersUp = hDetect.fingersUp()
 
         hand_detected = False
+        drawing = False
 
         if landmark_list and len(landmark_list) > 8:
             xIndex, yIndex = landmark_list[8][1], landmark_list[8][2]
