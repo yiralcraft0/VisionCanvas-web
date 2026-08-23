@@ -26,6 +26,7 @@ The project combines Python, OpenCV, Flask, and MediaPipe to provide a real-time
 - 🌐 Browser-based interface using Flask
 - ⚡ Real-time streaming with minimal latency
 - 📱 Easy to run on any desktop browser
+- 💾 Save drawing as image
 
 ---
 
@@ -38,29 +39,36 @@ The project combines Python, OpenCV, Flask, and MediaPipe to provide a real-time
 - NumPy
 - HTML
 - CSS
+- JavaScript
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-VisionCanvas/
-│
-├── static/
-│   └── style.css
-|
-├── templates/
-│   ├── base.html
-│   └── home.html
-│
+VisionCanvas-web/
 ├── HandTrakingModule.py
-├── main.py
-├── ex.HTML
-├── requirement.txt
-├── README.md
 ├── LICENSE
-└── .gitignore
-```
+├── README.md
+├── main.py
+├── requirement.txt
+├── .gitignore
+├── static/
+│   ├── app_css/
+│   │   ├── base.css
+│   │   └── home.css
+│   ├── app_js/
+│   │   └── home.js
+│   ├── images/
+│   │   ├── CSSDesign.png
+│   │   └── VisionCanvasLogo2.png
+│   └── media/
+│       └── multipleSvgIcons
+│     
+└── templates/
+    ├── base.html
+    └── home.html
+``` 
 
 ---
 
@@ -144,24 +152,14 @@ Add screenshots or a demo GIF here.
 Example:
 
 ```
-images/demo.gif
+![Project Screenshot](/static/images/Screenshot1.png)
 ```
 
-or
-
-```
-images/home.png
-```
 
 ---
 
 ## 💡 Future Improvements
 
-- Multiple brush colors ✅
-- Adjustable brush size ✅
-- Eraser mode ✅
-- Save drawing as image
-- Gesture-based controls
 - Undo & Redo
 - Mobile support
 - Multiple hand tracking

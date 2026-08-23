@@ -11,7 +11,7 @@ import math
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-camera = cv.VideoCapture(0)
+camera = cv.VideoCapture(0, cv.CAP_DSHOW)
 if not camera.isOpened():
     raise RuntimeError(
         "Could not open camera. Try changing cv.VideoCapture(1) "
@@ -34,7 +34,7 @@ brushColour = (255, 255, 255)
 brushSize = 5
 fps = 0
 
-wCam, hCam = 300, 300
+wCam, hCam = 320, 240   # 4:3, still cheap to process
 camera.set(cv.CAP_PROP_FRAME_WIDTH, wCam)
 camera.set(cv.CAP_PROP_FRAME_HEIGHT, hCam)
 
@@ -49,19 +49,25 @@ def process_camera():
 
     The function performs hand detection, computes fingertip positions, draws on the canvas, and publishes FPS to clients.
     """
-    global fps
     global latest_video_frame
     global latest_canvas_frame
     global canvas
     global processing_active
 
+    global fps
+    global hand_detected
+    global drawing
+
     previous_x = 0
     previous_y = 0
     current_x = 0
     current_y = 0
+    last_fps_update = 0
     pTime, cTime = 0, 0
     lineLength = 0
     frameR = 30
+    drawing = False
+
     while processing_active:
         success, frame = camera.read()
         if not success:
@@ -101,6 +107,7 @@ def process_camera():
                 if len(set(isFingersUp)) <= 1:
                     canvas[:] = 0, 0, 0
                 if isFingersUp[1] == 1 and isFingersUp[2] == 1 and lineLength <= 35:
+                    drawing = True
                     if previous_x == 0 and previous_y == 0:
                         previous_x = current_x
                         previous_y = current_y
@@ -116,14 +123,20 @@ def process_camera():
                 else:
                     previous_x = 0
                     previous_y = 0
+                    drawing = False
 
         cTime = time.time()
         fps = int(1 / (cTime - pTime)) if (cTime - pTime) > 0 else 0
         pTime = cTime
-        socketio.emit('fps_update', {'value': fps})
-        time.sleep(0.1)
-        cv.putText(frame, f"FPS: {fps}", (30, 50),
-                   cv.FONT_HERSHEY_PLAIN, .8, (60, 112, 206), 2)
+        cv.putText(frame, f"FPS: {fps}", (30, 50), cv.FONT_HERSHEY_PLAIN, .8, (60, 112, 206), 2)
+
+        if cTime - last_fps_update >= 0.5:
+            socketio.emit("statusUpdate", {
+            "FPS" : fps,
+            "handDetected" : hand_detected,
+            "isDrawing" : drawing
+            })
+            last_fps_update = cTime
 
         with frame_lock:
             latest_video_frame = frame.copy()
@@ -147,7 +160,7 @@ def generate_stream(stream_type):
             time.sleep(0.01)
             continue
 
-        success, buffer = cv.imencode(".jpg", frame)
+        success, buffer = cv.imencode(".jpg", frame, [cv.IMWRITE_JPEG_QUALITY, 70])
         if not success:
             continue
 
@@ -201,7 +214,8 @@ def clearCanvas():
     global canvas
 
     data = request.get_json()
-    canvas[:] = 0, 0, 0
+    if canvas is not None:
+        canvas[:] = 0, 0, 0
 
     if data:
         return {"Status": data["status"]}
@@ -268,23 +282,6 @@ def draw_canvas_route():
     )
 
 
-@app.route("/clear_canvas")
-def clear_canvas():
-    """Clear the drawing canvas and update the latest canvas frame buffer.
-
-    Acquires frame_lock to ensure the operation is thread-safe, then zeroes the
-    canvas (if present) and writes the updated copy to latest_canvas_frame.
-    Returns a JSON status message.
-    """
-    global canvas
-    global latest_canvas_frame
-    with frame_lock:
-        if canvas is not None:
-            canvas[:] = 0
-            latest_canvas_frame = canvas.copy()
-    return {"status": "Canvas cleared successfully"}
-
-
 def release_resources():
     """Stop background processing and release camera resources.
 
@@ -299,17 +296,23 @@ def release_resources():
 
 
 if __name__ == "__main__":
+
     camera_thread = threading.Thread(
         target=process_camera,
-        daemon=True,
+        daemon=True
     )
+
     camera_thread.start()
+
     try:
-        app.run(
-            debug=True,
+        socketio.run(
+            app,
+            host="127.0.0.1",
             port=5600,
-            threaded=True,
-            use_reloader=False,
+            debug=True,
+            use_reloader=False
         )
+
+
     finally:
         release_resources()

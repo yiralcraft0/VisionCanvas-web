@@ -111,14 +111,14 @@ brushSizeBox.addEventListener("change", () => {
     });
 });
 
-document.getElementById("clearCanvasBtn").addEventListener("click", () =>{
-    fetch(`${window.origin}/clearCanvas`,{
+document.getElementById("clearCanvasBtn").addEventListener("click", () => {
+    fetch(`${window.origin}/clearCanvas`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            status : "Done"
+            status: "Done"
         })
     });
 });
@@ -169,3 +169,41 @@ async function downloadDrawing() {
     }
 }
 
+console.log("Socket.IO library:", typeof io);
+const socket = io();
+
+socket.on("connect", () => {
+    console.log("✅ Socket.IO connected!");
+    console.log("Socket ID:", socket.id);
+});
+
+socket.on("connect_error", (error) => {
+    console.error("❌ Socket.IO connection error:", error);
+});
+
+socket.on("statusUpdate", (data) => {
+
+    console.log("🔥 STATUS RECEIVED:", data);
+
+    // Get HTML elements
+    const handDetection = document.getElementById("handDetection");
+    const isDrawing = document.getElementById("isDrawing");
+    const updateFPS = document.getElementById("updateFPS");
+
+    // Update Hand Detection
+    if(data.handDetected){
+        handDetection.textContent = "🟢 Detected";
+    }else{
+        handDetection.textContent = "🔴 Not Detected";
+        handDetection.textContent.color = "red";
+    };
+    // Update Drawing status
+    if(data.isDrawing){
+        isDrawing.textContent = "🟢 Drawing";
+    }else{
+        isDrawing.textContent = "🔴 Not Drawing";
+        isDrawing.textContent.color = "red";
+    };
+    // Update FPS
+    updateFPS.textContent = `${Math.round(data.FPS)}`;
+});

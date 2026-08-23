@@ -11,7 +11,8 @@ Cstyle %}
                 <span>Camera Feed</span>
             </div>
             <div class="camBody">
-                <img src="{{ url_for('video_feed') }}" width="300" height="300" alt="Live Stream" />
+                <!-- small camera thumbnail, 4:3 -->
+                <img src="{{ url_for('video_feed') }}" width="240" height="180" alt="Live Stream" />
             </div>
         </div>
 
@@ -21,7 +22,7 @@ Cstyle %}
                 <span>Drawing Canvas</span>
             </div>
             <div class="canvasBody">
-                <img src="{{ url_for('draw_canvas_route') }}" width="700" height="280" alt="Draw Canva" />
+                <img src="{{ url_for('draw_canvas_route') }}" width="800" height="300" alt="Draw Canva" />
             </div>
             <div class="canvasFoot">
                 <div class="color-cointaner">
@@ -93,10 +94,10 @@ Cstyle %}
             <div class="statusContent">
                 <div class="statusTitle">
                     <img src="/static/media/trakingIcon.svg" alt="Traking">
-                    <span>Traking</span>
+                    <span>Hand Detection</span>
                 </div>
                 <div class="statusCheak">
-                    <span>Active</span>
+                    <span id="handDetection">Not Detecting</span>
                 </div>
             </div>
 
@@ -106,7 +107,7 @@ Cstyle %}
                     <span>Drawing</span>
                 </div>
                 <div class="statusCheak">
-                    <span>Yes</span>
+                    <span id="isDrawing">Not Drawing</span>
                 </div>
             </div>
 
@@ -116,12 +117,13 @@ Cstyle %}
                     <span>FPS</span>
                 </div>
                 <div class="statusCheak">
-                    <span>--</span>
+                    <span id="updateFPS">0</span>
                 </div>
             </div>
         </div>
     </div>
 </section>
 {% endblock content %} {% block Jscript %}
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="/static/app_js/home.js"></script>
 {% endblock Jscript %}
