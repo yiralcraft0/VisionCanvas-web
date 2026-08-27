@@ -1,6 +1,7 @@
 # 🎨 Vision Canvas
 
 ### 👨‍💻 Author: **Priyanshu**[YiralcrafT]
+
 - GitHub: https://github.com/yiralcraft0
 
 ---
@@ -64,11 +65,11 @@ VisionCanvas-web/
 │   │   └── VisionCanvasLogo2.png
 │   └── media/
 │       └── multipleSvgIcons
-│     
+│
 └── templates/
     ├── base.html
     └── home.html
-``` 
+```
 
 ---
 
@@ -87,6 +88,8 @@ cd VisionCanvas
 ---
 
 ### 2. Create a virtual environment
+
+- Note :- Python 12 or lower version is required.
 
 Windows
 
@@ -149,8 +152,6 @@ http://127.0.0.1:5600
 
 | <img src="static/images/Screenshot1.png" width="300">
 
-
-
 ---
 
 ## 💡 Future Improvements
@@ -195,7 +196,6 @@ git push origin feature-name
 This project is licensed under the MIT License.
 
 See the **LICENSE** file for more details.
-
 
 ---
 
