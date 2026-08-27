@@ -2,10 +2,4 @@ opencv-python
 mediapipe<0.10.30
 flask-socketio
 Flask
-pyautogui
-pyaudio
-pyperclip
-pyttsx3
-pycaw
 numpy
-autopy
